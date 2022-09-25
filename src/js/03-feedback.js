@@ -1,52 +1,41 @@
-// const text = 'text';
-// const key = 'testKey';
-// localStorage.getItem(key);
-// console.log(localStorage.getItem(key));
+import throttle from 'lodash.throttle';
+
 const localStorageKey = 'feedback-form-state';
 const inputRef = document.querySelector('input');
 const textareaRef = document.querySelector('textarea');
 const formRef = document.querySelector('.feedback-form');
+const timeDelay = 500;
 const initialFormData = {
-  input: '',
-  textArea: '',
+  email: '',
+  message: '',
 };
-let currentFormData = null;
+let currentFormData = initialFormData;
 // debugger;
 fillForm();
 
-formRef.addEventListener('input', onFormInput);
+formRef.addEventListener('input', throttle(onFormInput, timeDelay));
 formRef.addEventListener('submit', onFeedbackFormSubmit);
-inputRef.addEventListener('input', onInputInput);
+// inputRef.addEventListener('input', throttle(onInputInput, timeDelay));
 
-textareaRef.addEventListener('input', onTextAreaInput);
+// textareaRef.addEventListener('input', throttle(onTextAreaInput, timeDelay));
 
-function onFormInput() {
-  // console.log('input');
+function onFormInput(e) {
+  currentFormData = {
+    ...currentFormData,
+    [e.target.name]: e.target.value,
+  };
+  const value = JSON.stringify(currentFormData);
+  localStorage.setItem(localStorageKey, value);
 }
 
 function onFeedbackFormSubmit(e) {
   e.preventDefault();
-  console.log('submit');
-}
 
-function onInputInput(e) {
-  currentFormData = {
-    ...currentFormData,
-    input: e.target.value,
-  };
+  formRef.reset();
+  console.log(currentFormData);
+  currentFormData = initialFormData;
   const value = JSON.stringify(currentFormData);
   localStorage.setItem(localStorageKey, value);
-  console.log(e.target.value);
-}
-
-function onTextAreaInput(e) {
-  currentFormData = {
-    ...currentFormData,
-    textArea: e.target.value,
-  };
-  const value = JSON.stringify(currentFormData);
-  localStorage.setItem(localStorageKey, value);
-  console.log(e.target.value);
 }
 
 function loadFeedbackFormState() {
@@ -56,9 +45,9 @@ function loadFeedbackFormState() {
 }
 
 function fillForm() {
-  const { input, textArea } = loadFeedbackFormState();
-  inputRef.value = input;
-  textareaRef.value = textArea;
+  const { email, message } = loadFeedbackFormState();
+  inputRef.value = email;
+  textareaRef.value = message;
 }
 // Выполняй это задание в файлах 03-feedback.html и 03-feedback.js. Разбей его на несколько подзадач:
 

@@ -6,7 +6,8 @@ const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
 
 player.setCurrentTime(loadPosition());
-player.on('timeupdate', throttle(onTimeUpdate, 1000));
+const throtledOnTimeUpdate = throttle(onTimeUpdate, 1000);
+player.on('timeupdate', throtledOnTimeUpdate);
 
 function onTimeUpdate(e) {
   savePosition(e.seconds);
